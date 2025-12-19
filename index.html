@@ -19,18 +19,18 @@
     <h1>Puter.js Free AI Chat</h1>
     <p>Unlimited access to top models — powered by Puter.js (hosted on Cloudflare!)</p>
     
-    <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a funny story"></textarea>
+    <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
     <select id="model">
         <option value="gpt-5-nano">GPT-5 Nano (Fast & Smart)</option>
         <option value="gpt-5.1">GPT-5.1 (Advanced)</option>
-        <option value="gpt-4o">GPT-4o (Classic)</option>
-        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (Witty & Helpful - Recommended)</option>
-        <option value="x-ai/grok-4-fast:free">Grok 4 Fast (Free Tier)</option>
-        <option value="claude-sonnet-4">Claude Sonnet 4</option>
-        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
-        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2</option>
-        <option value="mistralai/mistral-large-2512">Mistral Large 3</option>
+        <option value="gpt-4o">GPT-4o (Reliable Classic)</option>
+        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (Witty - Recommended)</option>
+        <option value="claude-sonnet-4">Claude Sonnet 4 (Deep Reasoning)</option>
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fast Multimodal)</option>
+        <option value="gemini-3-flash-preview">Gemini 3 Flash (Latest Fast)</option>
+        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (Strong Coder)</option>
+        <option value="mistralai/mistral-large-2512">Mistral Large 3 (Balanced)</option>
     </select>
     
     <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
@@ -38,21 +38,21 @@
     <div id="response">Loading Puter.js...</div>
 
     <script>
-        // Dynamically load Puter.js with reliability
+        // Load Puter.js reliably
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Puter.js loaded! Select a model and chat.';
+            document.getElementById('response').innerHTML = 'Puter.js loaded! Choose a model and send a message.';
             document.getElementById('sendBtn').disabled = false;
         };
         script.onerror = () => {
-            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — check internet or refresh page.</strong>';
+            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh the page.</strong>';
         };
         document.head.appendChild(script);
 
         async function sendChat() {
             if (typeof puter === 'undefined') {
-                document.getElementById('response').innerHTML = '<strong>Puter.js not ready yet — wait or refresh.</strong>';
+                document.getElementById('response').innerHTML = '<strong>Puter.js not ready — wait or refresh.</strong>';
                 return;
             }
 
@@ -76,7 +76,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try another model or refresh'}<br><small>Tip: Grok 4.1 Fast works best!</small>`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try Grok 4.1 Fast or refresh'}<br><small>Some models may be temporarily busy.</small>`;
                 console.error(err);
             } finally {
                 document.getElementById('sendBtn').disabled = false;
