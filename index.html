@@ -17,19 +17,12 @@
 </head>
 <body>
     <h1>Puter.js Free AI Chat</h1>
-    <p>Unlimited access to top models — powered by Puter.js (hosted on Cloudflare!)</p>
+    <p>Unlimited access to available models — powered by Puter.js (hosted on Cloudflare!)</p>
     
     <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
     <select id="model">
-        <option value="gpt-4o">GPT-4o (OpenAI - Reliable Classic)</option>
-        <option value="gpt-5-nano">GPT-5 Nano (OpenAI - Fast & Smart)</option>
-        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (xAI - Witty & Helpful)</option>
-        <option value="claude-sonnet-4">Claude Sonnet 4 (Anthropic - Deep Reasoning)</option>
-        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Google - Fast Multimodal)</option>
-        <option value="meta-llama/llama-3.1-405b">Llama 3.1 405B (Meta - Powerful Open-Source)</option>
-        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (DeepSeek - Strong Coder)</option>
-        <option value="mistralai/mistral-large-2512">Mistral Large 3 (Mistral - Balanced)</option>
+        <option>Loading models...</option>
     </select>
     
     <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
@@ -37,17 +30,38 @@
     <div id="response">Loading Puter.js...</div>
 
     <script>
-        // Load Puter.js reliably
+        // Load Puter.js
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
-        script.onload = () => {
-            document.getElementById('response').innerHTML = 'Puter.js loaded! Choose a model and send a message.';
-            document.getElementById('sendBtn').disabled = false;
-        };
+        script.onload = loadModels;
         script.onerror = () => {
-            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh the page.</strong>';
+            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh or check internet.</strong>';
         };
         document.head.appendChild(script);
+
+        async function loadModels() {
+            try {
+                const models = await puter.ai.listModels();
+                const select = document.getElementById('model');
+                select.innerHTML = '';  // Clear loading
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = `\( {model.name} ( \){model.provider})`;
+                    select.appendChild(option);
+                });
+                if (models.length > 0) {
+                    select.value = models[0].id;  // Default to first
+                    document.getElementById('response').innerHTML = 'Models loaded! Ready to chat.';
+                    document.getElementById('sendBtn').disabled = false;
+                } else {
+                    document.getElementById('response').innerHTML = '<strong>No models available — try refreshing.</strong>';
+                }
+            } catch (err) {
+                document.getElementById('response').innerHTML = '<strong>Error loading models:</strong> ' + (err.message || 'Unknown') + '<br>Refresh the page.';
+                console.error(err);
+            }
+        }
 
         async function sendChat() {
             if (typeof puter === 'undefined') {
@@ -64,7 +78,7 @@
                 return;
             }
             
-            responseDiv.innerHTML = `<em>Thinking with ${model.split('/').pop()}...</em>`;
+            responseDiv.innerHTML = `<em>Thinking with ${model}...</em>`;
             document.getElementById('sendBtn').disabled = true;
             
             try {
@@ -73,9 +87,9 @@
                     messages: [{ role: 'user', content: prompt }]
                 });
                 const reply = res.choices[0].message.content;
-                responseDiv.innerHTML = `<strong>\( {model.split('/').pop()}:</strong><br> \){reply}`;
+                responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try Grok 4.1 Fast or another model'}<br><small>Models can be busy; refresh if needed.</small>`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try another model or refresh'}<br><small>Models can be busy.</small>`;
                 console.error(err);
             } finally {
                 document.getElementById('sendBtn').disabled = false;
