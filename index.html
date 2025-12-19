@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puter.js AI Chat - Hosted on Cloudflare</title>
-    <script src="https://js.puter.com/v2/"></script>
+    <title>Puter.js Free AI Chat - Hosted on Cloudflare</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f7f7f7; }
         h1 { text-align: center; }
@@ -12,6 +11,7 @@
         input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
         button { padding: 12px 20px; font-size: 16px; background: #007bff; color: white; border: none; cursor: pointer; }
         button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
         #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; }
     </style>
 </head>
@@ -21,13 +21,30 @@
     
     <textarea id="prompt" placeholder="Ask anything... e.g., Plan a 3-day trip to Tokyo"></textarea>
     <input type="text" id="model" value="gpt-4o" placeholder="Model (e.g., gpt-4o, x-ai/grok-4, claude-3.5-sonnet)">
-    <button onclick="sendChat()">Send to AI</button>
+    <button id="sendBtn" onclick="sendChat()">Send to AI</button>
     
-    <div id="response">Response will appear here...</div>
+    <div id="response">Waiting for Puter.js to load...</div>
 
     <script>
+        // Load Puter.js dynamically with better reliability
+        const script = document.createElement('script');
+        script.src = 'https://js.puter.com/v2/';
+        script.onload = () => {
+            document.getElementById('response').innerHTML = 'Puter.js loaded! Ready to chat.';
+            document.getElementById('sendBtn').disabled = false;
+        };
+        script.onerror = () => {
+            document.getElementById('response').innerHTML = '<strong>Error loading Puter.js — check your internet or try refreshing.</strong>';
+        };
+        document.head.appendChild(script);
+
         async function sendChat() {
-            const prompt = document.getElementById('prompt').value;
+            if (typeof puter === 'undefined') {
+                document.getElementById('response').innerHTML = '<strong>Puter.js not loaded yet — wait or refresh.</strong>';
+                return;
+            }
+
+            const prompt = document.getElementById('prompt').value.trim();
             const model = document.getElementById('model').value || 'gpt-4o';
             const responseDiv = document.getElementById('response');
             
@@ -37,6 +54,7 @@
             }
             
             responseDiv.innerHTML = '<em>Thinking...</em>';
+            document.getElementById('sendBtn').disabled = true;
             
             try {
                 const res = await puter.ai.chat({
@@ -46,8 +64,10 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message}<br>Check console for details.`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown error'}<br>Try again or check console (F12).`;
                 console.error(err);
+            } finally {
+                document.getElementById('sendBtn').disabled = false;
             }
         }
     </script>
