@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puter.js AI Chat - Hosted on Cloudflare</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f7f7f7; }
+        h1 { text-align: center; }
+        textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
+        button { padding: 12px 20px; font-size: 16px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Puter.js Free AI Chat</h1>
+    <p>Unlimited access to GPT-4o, Grok, Claude, Llama, etc. — powered by Puter.js (hosted on Cloudflare!)</p>
+    
+    <textarea id="prompt" placeholder="Ask anything... e.g., Plan a 3-day trip to Tokyo"></textarea>
+    <input type="text" id="model" value="gpt-4o" placeholder="Model (e.g., gpt-4o, x-ai/grok-4, claude-3.5-sonnet)">
+    <button onclick="sendChat()">Send to AI</button>
+    
+    <div id="response">Response will appear here...</div>
+
+    <script>
+        async function sendChat() {
+            const prompt = document.getElementById('prompt').value;
+            const model = document.getElementById('model').value || 'gpt-4o';
+            const responseDiv = document.getElementById('response');
+            
+            if (!prompt) {
+                responseDiv.innerHTML = '<strong>Please enter a prompt!</strong>';
+                return;
+            }
+            
+            responseDiv.innerHTML = '<em>Thinking...</em>';
+            
+            try {
+                const res = await puter.ai.chat({
+                    model: model,
+                    messages: [{ role: 'user', content: prompt }]
+                });
+                const reply = res.choices[0].message.content;
+                responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
+            } catch (err) {
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message}<br>Check console for details.`;
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
