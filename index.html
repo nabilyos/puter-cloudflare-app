@@ -8,44 +8,56 @@
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f7f7f7; }
         h1 { text-align: center; }
         textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; }
-        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
-        button { padding: 12px 20px; font-size: 16px; background: #007bff; color: white; border: none; cursor: pointer; }
+        select, button { padding: 10px; margin: 10px 0; font-size: 16px; width: 100%; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
         button:hover { background: #0056b3; }
         button:disabled { background: #ccc; cursor: not-allowed; }
-        #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; }
+        #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
     </style>
 </head>
 <body>
     <h1>Puter.js Free AI Chat</h1>
-    <p>Unlimited access to GPT-4o, Grok, Claude, Llama, etc. — powered by Puter.js (hosted on Cloudflare!)</p>
+    <p>Unlimited access to top models — powered by Puter.js (hosted on Cloudflare!)</p>
     
-    <textarea id="prompt" placeholder="Ask anything... e.g., Plan a 3-day trip to Tokyo"></textarea>
-    <input type="text" id="model" value="gpt-4o" placeholder="Model (e.g., gpt-4o, x-ai/grok-4, claude-3.5-sonnet)">
-    <button id="sendBtn" onclick="sendChat()">Send to AI</button>
+    <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a funny story"></textarea>
     
-    <div id="response">Waiting for Puter.js to load...</div>
+    <select id="model">
+        <option value="gpt-5-nano">GPT-5 Nano (Fast & Smart)</option>
+        <option value="gpt-5.1">GPT-5.1 (Advanced)</option>
+        <option value="gpt-4o">GPT-4o (Classic)</option>
+        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (Witty & Helpful - Recommended)</option>
+        <option value="x-ai/grok-4-fast:free">Grok 4 Fast (Free Tier)</option>
+        <option value="claude-sonnet-4">Claude Sonnet 4</option>
+        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2</option>
+        <option value="mistralai/mistral-large-2512">Mistral Large 3</option>
+    </select>
+    
+    <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
+    
+    <div id="response">Loading Puter.js...</div>
 
     <script>
-        // Load Puter.js dynamically with better reliability
+        // Dynamically load Puter.js with reliability
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Puter.js loaded! Ready to chat.';
+            document.getElementById('response').innerHTML = 'Puter.js loaded! Select a model and chat.';
             document.getElementById('sendBtn').disabled = false;
         };
         script.onerror = () => {
-            document.getElementById('response').innerHTML = '<strong>Error loading Puter.js — check your internet or try refreshing.</strong>';
+            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — check internet or refresh page.</strong>';
         };
         document.head.appendChild(script);
 
         async function sendChat() {
             if (typeof puter === 'undefined') {
-                document.getElementById('response').innerHTML = '<strong>Puter.js not loaded yet — wait or refresh.</strong>';
+                document.getElementById('response').innerHTML = '<strong>Puter.js not ready yet — wait or refresh.</strong>';
                 return;
             }
 
             const prompt = document.getElementById('prompt').value.trim();
-            const model = document.getElementById('model').value || 'gpt-4o';
+            const model = document.getElementById('model').value;
             const responseDiv = document.getElementById('response');
             
             if (!prompt) {
@@ -53,7 +65,7 @@
                 return;
             }
             
-            responseDiv.innerHTML = '<em>Thinking...</em>';
+            responseDiv.innerHTML = `<em>Thinking with ${model}...</em>`;
             document.getElementById('sendBtn').disabled = true;
             
             try {
@@ -64,7 +76,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown error'}<br>Try again or check console (F12).`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try another model or refresh'}<br><small>Tip: Grok 4.1 Fast works best!</small>`;
                 console.error(err);
             } finally {
                 document.getElementById('sendBtn').disabled = false;
