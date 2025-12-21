@@ -13,21 +13,24 @@
         button:hover { background: #0056b3; }
         button:disabled { background: #ccc; cursor: not-allowed; }
         #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
+        #loginBtn { background: #28a745; }
     </style>
 </head>
 <body>
     <h1>Puter.js Free AI Chat</h1>
-    <p>Unlimited access to latest models — powered by Puter.js on Cloudflare!</p>
+    <p>Unlimited access to GPT-5 Nano, Grok, Claude & more — powered by Puter.js on Cloudflare!</p>
+    <p><strong>Login to Puter for full AI access (free & quick):</strong></p>
+    <button id="loginBtn" onclick="puter.auth.login()">Login to Puter</button>
     
     <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
     <select id="model">
         <option value="gpt-5-nano" selected>GPT-5 Nano (Fast & Smart - Recommended)</option>
-        <option value="gpt-4o">GPT-4o (Reliable Classic)</option>
-        <option value="x-ai/grok-4.1-fast">Grok 4.1 Fast (Witty & Helpful)</option>
-        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet (Deep Reasoning)</option>
-        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fast Multimodal)</option>
-        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (Strong Coder)</option>
+        <option value="gpt-4o">GPT-4o (Reliable)</option>
+        <option value="x-ai/grok-4.1-fast">Grok 4.1 Fast (Witty)</option>
+        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet (Reasoning)</option>
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Multimodal)</option>
+        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (Coder)</option>
     </select>
     
     <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
@@ -38,7 +41,7 @@
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Ready! Type a message and send.';
+            document.getElementById('response').innerHTML = 'Puter.js loaded! Login above to enable AI.';
             document.getElementById('sendBtn').disabled = false;
         };
         script.onerror = () => {
@@ -69,7 +72,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try GPT-5 Nano or refresh'}<br><small>Check console for details.</small>`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Login required or try another model'}<br><small>Click Login button above!</small>`;
             } finally {
                 document.getElementById('sendBtn').disabled = false;
             }
