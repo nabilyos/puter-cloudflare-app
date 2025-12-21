@@ -13,14 +13,14 @@
         button:hover { background: #0056b3; }
         button:disabled { background: #ccc; cursor: not-allowed; }
         #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
-        #loginBtn { background: #28a745; }
+        #loginBtn { background: #28a745; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <h1>Puter.js Free AI Chat</h1>
     <p>Unlimited access to GPT-5 Nano, Grok, Claude & more — powered by Puter.js on Cloudflare!</p>
-    <p><strong>Login to Puter for full AI access (free & quick):</strong></p>
-    <button id="loginBtn" onclick="puter.auth.login()">Login to Puter</button>
+    <p><strong>Click Login for full AI access (free signup/login):</strong></p>
+    <button id="loginBtn" onclick="loginToPuter()" disabled>Login to Puter</button>
     
     <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
@@ -41,13 +41,23 @@
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Puter.js loaded! Login above to enable AI.';
+            document.getElementById('response').innerHTML = 'Puter.js loaded! Click Login to enable full AI.';
+            document.getElementById('loginBtn').disabled = false;
             document.getElementById('sendBtn').disabled = false;
         };
         script.onerror = () => {
             document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh page.</strong>';
         };
         document.head.appendChild(script);
+
+        function loginToPuter() {
+            if (typeof puter === 'undefined' || typeof puter.auth === 'undefined') {
+                document.getElementById('response').innerHTML = '<strong>Puter.js not ready yet — wait a second and try again.</strong>';
+                return;
+            }
+            puter.auth.login();  // Opens popup for free login/signup
+            document.getElementById('response').innerHTML = 'Login popup opened! Complete it to unlock AI.';
+        }
 
         async function sendChat() {
             if (typeof puter === 'undefined') return;
@@ -72,7 +82,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Login required or try another model'}<br><small>Click Login button above!</small>`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Login first or try another model'}<br><small>Click the Login button above!</small>`;
             } finally {
                 document.getElementById('sendBtn').disabled = false;
             }
