@@ -13,24 +13,23 @@
         button:hover { background: #0056b3; }
         button:disabled { background: #ccc; cursor: not-allowed; }
         #response { margin-top: 20px; padding: 15px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
-        #loginBtn { background: #28a745; margin-bottom: 20px; }
+        #loginBtn { background: #28a745; }
     </style>
 </head>
 <body>
     <h1>Puter.js Free AI Chat</h1>
     <p>Unlimited access to GPT-5 Nano, Grok, Claude & more — powered by Puter.js on Cloudflare!</p>
-    <p><strong>Click Login for full AI access (free signup/login):</strong></p>
-    <button id="loginBtn" onclick="loginToPuter()" disabled>Login to Puter</button>
+    <p><strong>Click Login for full AI (free signup):</strong></p>
+    <button id="loginBtn" onclick="loginToPuter()" disabled>Login / Sign Up (Free)</button>
     
     <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
     <select id="model">
-        <option value="gpt-5-nano" selected>GPT-5 Nano (Fast & Smart - Recommended)</option>
-        <option value="gpt-4o">GPT-4o (Reliable)</option>
+        <option value="gpt-5-nano" selected>GPT-5 Nano (Fast & Smart)</option>
+        <option value="gpt-4o">GPT-4o</option>
         <option value="x-ai/grok-4.1-fast">Grok 4.1 Fast (Witty)</option>
-        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet (Reasoning)</option>
-        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Multimodal)</option>
-        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (Coder)</option>
+        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
     </select>
     
     <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
@@ -41,22 +40,26 @@
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Puter.js loaded! Click Login to enable full AI.';
+            document.getElementById('response').innerHTML = 'Loaded! Click Login to unlock AI.';
             document.getElementById('loginBtn').disabled = false;
             document.getElementById('sendBtn').disabled = false;
         };
         script.onerror = () => {
-            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh page.</strong>';
+            document.getElementById('response').innerHTML = '<strong>Load failed — refresh.</strong>';
         };
         document.head.appendChild(script);
 
-        function loginToPuter() {
+        async function loginToPuter() {
             if (typeof puter === 'undefined' || typeof puter.auth === 'undefined') {
-                document.getElementById('response').innerHTML = '<strong>Puter.js not ready yet — wait a second and try again.</strong>';
+                document.getElementById('response').innerHTML = '<strong>Not ready — wait and retry.</strong>';
                 return;
             }
-            puter.auth.login();  // Opens popup for free login/signup
-            document.getElementById('response').innerHTML = 'Login popup opened! Complete it to unlock AI.';
+            try {
+                await puter.auth.signIn();  // Correct method: signIn()
+                document.getElementById('response').innerHTML = 'Logged in! Now chat.';
+            } catch (err) {
+                document.getElementById('response').innerHTML = '<strong>Login error:</strong> Allow popups & try again.';
+            }
         }
 
         async function sendChat() {
@@ -67,7 +70,7 @@
             const responseDiv = document.getElementById('response');
             
             if (!prompt) {
-                responseDiv.innerHTML = '<strong>Please type something!</strong>';
+                responseDiv.innerHTML = '<strong>Type something!</strong>';
                 return;
             }
             
@@ -82,7 +85,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Login first or try another model'}<br><small>Click the Login button above!</small>`;
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Login first!'}<br><small>Click Login button.</small>`;
             } finally {
                 document.getElementById('sendBtn').disabled = false;
             }
