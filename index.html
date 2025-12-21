@@ -22,12 +22,12 @@
     <textarea id="prompt" placeholder="Ask anything... e.g., Tell me a joke"></textarea>
     
     <select id="model">
-        <option value="gpt-4o">GPT-4o (OpenAI - Reliable)</option>
-        <option value="gpt-5-nano">GPT-5 Nano (OpenAI - Fast)</option>
-        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (xAI - Witty)</option>
-        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet (Anthropic - Reasoning)</option>
-        <option value="google/gemini-1.5-pro">Gemini 1.5 Pro (Google - Multimodal)</option>
-        <option value="meta-llama/llama-3.1-405b">Llama 3.1 405B (Meta - Open-Source)</option>
+        <option value="gpt-5-nano">GPT-5 Nano (Fast & Smart)</option>
+        <option value="gpt-4o">GPT-4o (Reliable)</option>
+        <option value="x-ai/grok-4.1-fast" selected>Grok 4.1 Fast (Witty - Best!)</option>
+        <option value="claude-3.5-sonnet">Claude 3.5 Sonnet (Reasoning)</option>
+        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Multimodal)</option>
+        <option value="deepseek/deepseek-v3.2">DeepSeek v3.2 (Coder)</option>
     </select>
     
     <button id="sendBtn" onclick="sendChat()" disabled>Send to AI</button>
@@ -35,32 +35,26 @@
     <div id="response">Loading Puter.js...</div>
 
     <script>
-        // Load Puter.js
         const script = document.createElement('script');
         script.src = 'https://js.puter.com/v2/';
         script.onload = () => {
-            document.getElementById('response').innerHTML = 'Ready to chat! Select a model and send.';
+            document.getElementById('response').innerHTML = 'Ready! Type a message and send.';
             document.getElementById('sendBtn').disabled = false;
-            console.log('Puter.js loaded successfully');
         };
         script.onerror = () => {
-            document.getElementById('response').innerHTML = '<strong>Error loading Puter.js — check internet or refresh.</strong>';
-            console.error('Puter.js load failed');
+            document.getElementById('response').innerHTML = '<strong>Failed to load Puter.js — refresh page.</strong>';
         };
         document.head.appendChild(script);
 
         async function sendChat() {
-            if (typeof puter === 'undefined') {
-                document.getElementById('response').innerHTML = '<strong>Puter.js not loaded — refresh.</strong>';
-                return;
-            }
+            if (typeof puter === 'undefined') return;
 
             const prompt = document.getElementById('prompt').value.trim();
             const model = document.getElementById('model').value;
             const responseDiv = document.getElementById('response');
             
             if (!prompt) {
-                responseDiv.innerHTML = '<strong>Please enter a prompt!</strong>';
+                responseDiv.innerHTML = '<strong>Please type something!</strong>';
                 return;
             }
             
@@ -75,8 +69,7 @@
                 const reply = res.choices[0].message.content;
                 responseDiv.innerHTML = `<strong>\( {model}:</strong><br> \){reply}`;
             } catch (err) {
-                responseDiv.innerHTML = '<strong>Error:</strong> ' + (err.message || 'Try another model or refresh') + '<br><small>Check console for details (long-press > Inspect > Console).</small>';
-                console.error('Chat error:', err);
+                responseDiv.innerHTML = `<strong>Error:</strong> ${err.message || 'Try Grok 4.1 Fast'}<br><small>Refresh if stuck.</small>`;
             } finally {
                 document.getElementById('sendBtn').disabled = false;
             }
